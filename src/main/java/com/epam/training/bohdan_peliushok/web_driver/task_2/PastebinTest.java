@@ -48,7 +48,6 @@ public class PastebinTest {
         assertTrue(syntaxElement.isDisplayed(), "Syntax highlighting for Bash is not applied");
 
         assertEquals(pasteCode, pastebinHomePage.getRawPasteContent(), "The code content does not match");
-        Thread.sleep(3000);
     }
 
     @AfterEach

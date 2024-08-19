@@ -26,7 +26,6 @@ public class PastebinTest {
         pastebinHomePage.selectPasteExpiration("10 Minutes");
         pastebinHomePage.enterPasteName("helloweb");
         pastebinHomePage.createNewPaste();
-        Thread.sleep(1000);// Might be deleted, has been added for better result observation
     }
 
     @After
