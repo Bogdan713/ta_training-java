@@ -16,12 +16,14 @@ public class GoogleCloudCalculatorTest {
             calculatorPage.addToEstimate();
             calculatorPage.selectComputeEngine();
             calculatorPage.fillForm();
-            calculatorPage.clickShare();
+            calculatorPage.waitUntilCostUpdated();
 
+            calculatorPage.clickShare();
             EstimateSummaryPage summaryPage = new EstimateSummaryPage(driver);
             summaryPage.openEstimateSummary();
-
             String summaryDetails = summaryPage.getSummaryDetails();
+            System.out.println(summaryDetails);
+
             Assert.assertTrue(summaryDetails.contains("Number of Instances\n" + "4"));
             Assert.assertTrue(summaryDetails.contains("Free: Debian, CentOS, CoreOS, Ubuntu or BYOL"));
             Assert.assertTrue(summaryDetails.contains("Regular"));
@@ -33,7 +35,7 @@ public class GoogleCloudCalculatorTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            driver.quit();
+            //driver.quit();
         }
     }
 }

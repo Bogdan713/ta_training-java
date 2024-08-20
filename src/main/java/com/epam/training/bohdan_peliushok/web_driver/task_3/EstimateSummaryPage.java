@@ -35,6 +35,7 @@ public class EstimateSummaryPage {
 
     public String getSummaryDetails() {
         WebElement summary = wait.until(ExpectedConditions.visibilityOfElementLocated(totalEstimatedCost));
+
         return summary.getText();
     }
 }

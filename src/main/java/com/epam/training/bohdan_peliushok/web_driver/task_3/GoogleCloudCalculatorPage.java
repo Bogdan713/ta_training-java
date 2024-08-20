@@ -74,4 +74,8 @@ public class GoogleCloudCalculatorPage {
         WebElement share = wait.until(ExpectedConditions.elementToBeClickable(shareButton));
         share.click();
     }
+
+    public void waitUntilCostUpdated(){
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Service cost updated']")));
+    }
 }
