@@ -35,7 +35,7 @@ public class GoogleCloudCalculatorTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            //driver.quit();
+            driver.quit();
         }
     }
 }
