@@ -1,5 +1,7 @@
 package com.epam.training.bohdan_peliushok.framework.task_1;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -13,6 +15,7 @@ public class GoogleCloudCalculatorPage {
     private WebDriver driver;
     private WebDriverWait wait;
 
+    // Lines to be changed: Using @FindBy for element locators
     @FindBy(xpath = "//button//span[contains(text(), 'Add to estimate')]")
     private WebElement addToEstimateButton;
 
@@ -52,6 +55,9 @@ public class GoogleCloudCalculatorPage {
     @FindBy(xpath = "//span[contains(text(), 'Share')]")
     private WebElement shareButton;
 
+    @FindBy(xpath = "//span[@class='close']")
+    private WebElement bannerCloseButton;
+
     public GoogleCloudCalculatorPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -86,5 +92,17 @@ public class GoogleCloudCalculatorPage {
 
     public void clickShare() {
         wait.until(ExpectedConditions.elementToBeClickable(shareButton)).click();
+    }
+
+    public void waitUntilCostUpdated() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Service cost updated']")));
+    }
+
+    public void closeBanner() {
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(bannerCloseButton)).click();
+        } catch (NoSuchElementException e) {
+            System.out.println("Banner close button not found. Skipping...");
+        }
     }
 }

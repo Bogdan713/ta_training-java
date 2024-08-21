@@ -1,79 +1,72 @@
 package com.epam.training.bohdan_peliushok.framework.task_1;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.Assert;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.Collection;
 
+@RunWith(Parameterized.class)
 public class GoogleCloudCalculatorTest {
     private WebDriver driver;
+    private WebDriverManager webDriverManager;
 
-    @Before
-    public void setUp() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
+    private String browser;
+
+    public GoogleCloudCalculatorTest(String browser) {
+        this.browser = browser;
     }
 
-    @Rule
-    public TestWatcher watchman = new TestWatcher() {
-        @Override
-        protected void failed(Throwable e, Description description) {
-            takeScreenshot(description.getMethodName());
-        }
-    };
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        ConfigManager.loadProperties(System.getProperty("environment", "test"));
+        String[] browsers = ConfigManager.getBrowsers();
+        return Arrays.asList(browsers).stream().map(browser -> new Object[]{browser}).toList();
+    }
+    @Before
+    public void setUp() {
+        webDriverManager = new WebDriverManager();
+        driver = webDriverManager.getDriver(browser);
+        driver.get(ConfigManager.getProperty("url"));
+    }
 
     @Test
     public void testEstimateCreation() throws InterruptedException {
-        driver.get(PropertyManager.getProperty("url"));
+        try {
+            GoogleCloudCalculatorPage calculatorPage = new GoogleCloudCalculatorPage(driver);
+            calculatorPage.addToEstimate();
+            calculatorPage.selectComputeEngine();
+            calculatorPage.fillForm();
+            calculatorPage.closeBanner();
+            calculatorPage.waitUntilCostUpdated();
 
-        GoogleCloudCalculatorPage calculatorPage = new GoogleCloudCalculatorPage(driver);
-        calculatorPage.addToEstimate();
-        calculatorPage.selectComputeEngine();
-        calculatorPage.fillForm();
-        calculatorPage.clickShare();
+            calculatorPage.clickShare();
+            EstimateSummaryPage summaryPage = new EstimateSummaryPage(driver);
+            summaryPage.openEstimateSummary();
+            String summaryDetails = summaryPage.getSummaryDetails();
 
-        EstimateSummaryPage summaryPage = new EstimateSummaryPage(driver);
-        summaryPage.openEstimateSummary();
+            Assert.assertTrue(summaryDetails.contains("Number of Instances\n" + "4"));
+            Assert.assertTrue(summaryDetails.contains("Free: Debian, CentOS, CoreOS, Ubuntu or BYOL"));
+            Assert.assertTrue(summaryDetails.contains("Regular"));
+            Assert.assertTrue(summaryDetails.contains("n1-standard-8"));
+            Assert.assertTrue(summaryDetails.contains("NVIDIA V100"));
+            Assert.assertTrue(summaryDetails.contains("2x375 GB"));
+            Assert.assertTrue(summaryDetails.contains("Netherlands (europe-west4)"));
 
-        String summaryDetails = summaryPage.getSummaryDetails();
-        Assert.assertTrue(summaryDetails.contains("Number of Instances\n" + PropertyManager.getProperty("numberOfInstances")));
-        Assert.assertTrue(summaryDetails.contains(PropertyManager.getProperty("operatingSystem")));
-        Assert.assertTrue(summaryDetails.contains(PropertyManager.getProperty("machineType")));
-        Assert.assertTrue(summaryDetails.contains(PropertyManager.getProperty("gpuType")));
-        Assert.assertTrue(summaryDetails.contains(PropertyManager.getProperty("localSsd")));
-        Assert.assertTrue(summaryDetails.contains(PropertyManager.getProperty("region")));
+        } catch (Exception | Error e) {
+            ScreenshotUtil.takeScreenshot(driver, "testEstimateCreation");
+            throw e;
+        }
     }
 
     @After
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
-
-    private void takeScreenshot(String methodName) {
-        File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-        File destFile = new File("screenshots/" + methodName + "_" + timestamp + ".png");
-        try {
-            FileUtils.copyFile(srcFile, destFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //webDriverManager.quitDriver();
     }
 }
