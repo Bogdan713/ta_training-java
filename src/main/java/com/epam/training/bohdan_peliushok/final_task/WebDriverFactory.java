@@ -6,30 +6,33 @@ import org.openqa.selenium.edge.EdgeDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 /**
- * Factory class for creating WebDriver instances based on the browser type.
+ * Factory class to create WebDriver instances based on the specified browser type.
  */
 public class WebDriverFactory {
 
     /**
      * Creates a WebDriver instance for the specified browser.
      *
-     * @param browser the browser for which to create a WebDriver instance.
-     * @return a WebDriver instance for the specified browser.
-     * @throws IllegalArgumentException if the specified browser is not supported.
+     * @param browser the name of the browser to create the WebDriver for
+     * @return the created WebDriver instance
+     * @throws IllegalArgumentException if the browser name is null, empty, or not supported
      */
     public static WebDriver createDriver(String browser) {
+        if (browser == null || browser.trim().isEmpty()) {
+            throw new IllegalArgumentException("The browser name cannot be null or empty.");
+        }
+
         WebDriver driver;
         switch (browser.toLowerCase()) {
-            case "chrome":
+            case "chrome" -> {
                 WebDriverManager.chromedriver().setup();
                 driver = new ChromeDriver();
-                break;
-            case "edge":
+            }
+            case "edge" -> {
                 WebDriverManager.edgedriver().setup();
                 driver = new EdgeDriver();
-                break;
-            default:
-                throw new IllegalArgumentException("Browser not supported");
+            }
+            default -> throw new IllegalArgumentException("Browser not supported");
         }
         driver.manage().window().maximize();
         return driver;

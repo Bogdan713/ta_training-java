@@ -1,5 +1,7 @@
 package com.epam.training.bohdan_peliushok.framework.task_1;
 
+import com.epam.training.bohdan_peliushok.common.ConfigManager;
+import com.epam.training.bohdan_peliushok.common.ScreenshotUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -7,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.Arrays;
 import java.util.Collection;

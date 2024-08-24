@@ -17,7 +17,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Contains tests for the login functionality of the application.
+ * This class contains test cases for testing the login functionality of the application.
  */
 public class LoginTests {
 
@@ -26,52 +26,45 @@ public class LoginTests {
     private static final Logger log = LogManager.getLogger(LoginTests.class);
 
     /**
-     * Provides test data for parameterized login tests.
+     * Provides test data for the parameterized login tests.
      *
-     * @return a stream of test data as Object arrays.
+     * @return a stream of test data arrays
      */
     public static Stream<Object[]> data() {
         return Stream.of(new Object[][]{
-                {"chrome", "standard_user", "secret_sauce", true, ""},
-                {"chrome", "standard_user", "", false, "Password is required"},
-                {"chrome", "", "", false, "Username is required"},
-                {"edge", "standard_user", "secret_sauce", true, ""},
-                {"edge", "standard_user", "", false, "Password is required"},
-                {"edge", "", "", false, "Username is required"}
+                {"chrome", "standard_user", false, "secret_sauce", false, true, ""},
+                {"chrome", "standard_user", false, "any", true, false, "Password is required"},
+                {"chrome", "any", true, "any", true, false, "Username is required"},
+                {"edge", "standard_user", false, "secret_sauce", false, true, ""},
+                {"edge", "standard_user", false, "any", true, false, "Password is required"},
+                {"edge", "any", true, "any", true, false, "Username is required"},
         });
     }
 
     /**
-     * Sets up the WebDriver and LoginPage instance for each test.
+     * Parameterized test for verifying the login functionality with various inputs.
      *
-     * @param browser the browser to be used for the test.
-     */
-    public void setUp(String browser) {
-        driver = WebDriverFactory.createDriver(browser);
-        loginPage = new LoginPage(driver);
-    }
-
-    /**
-     * Tests the login functionality with various credentials and expected outcomes.
-     *
-     * @param browser     the browser to be used.
-     * @param username    the username to be entered.
-     * @param password    the password to be entered.
-     * @param shouldBeLogged whether login should be successful.
-     * @param errorText   the expected error message if login fails.
+     * @param browser        the browser to be used for the test
+     * @param username       the username to be entered
+     * @param clearUsername  whether to clear the username field
+     * @param password       the password to be entered
+     * @param clearPassword  whether to clear the password field
+     * @param shouldBeLogged whether the login should be successful
+     * @param errorText      the expected error message text if the login fails
      */
     @ParameterizedTest
     @MethodSource("data")
     @DisplayName("Login Test")
-    public void testLogin(String browser, String username, String password, Boolean shouldBeLogged, String errorText) {
-        setUp(browser);
+    public void testLogin(String browser, String username, Boolean clearUsername, String password, Boolean clearPassword, Boolean shouldBeLogged, String errorText) {
+        driver = WebDriverFactory.createDriver(browser);
+        loginPage = new LoginPage(driver);
         loginPage.open();
         log.info("Navigated to the login page");
 
-        loginPage.enterUsername(username.isEmpty() ? "test" : username);
-        loginPage.enterPassword(password.isEmpty() ? "pass" : password);
-        if (username.isEmpty()) loginPage.clearUsername();
-        if (password.isEmpty()) loginPage.clearPassword();
+        loginPage.enterUsername(username);
+        loginPage.enterPassword(password);
+        if (clearUsername) loginPage.clearUsername();
+        if (clearPassword) loginPage.clearPassword();
         loginPage.clickLoginButton();
 
         if (shouldBeLogged) {
@@ -87,7 +80,7 @@ public class LoginTests {
     }
 
     /**
-     * Cleans up the WebDriver instance after each test.
+     * Cleans up after each test by quitting the WebDriver instance.
      */
     @AfterEach
     public void tearDown() {

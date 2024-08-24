@@ -1,96 +1,114 @@
 package com.epam.training.bohdan_peliushok.final_task;
 
+import com.epam.training.bohdan_peliushok.common.ConfigManager;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 /**
- * Represents the login page of the application.
+ * This class represents the login page of the application.
+ * It provides methods to interact with the elements on the login page.
  */
 public class LoginPage {
     private WebDriver driver;
-    private By usernameInput = By.xpath("//input[@id='user-name']");
-    private By passwordInput = By.xpath("//input[@id='password']");
-    private By loginButton = By.xpath("//input[@id='login-button']");
-    private By errorMessage = By.xpath("//h3[@data-test='error']");
+
+    @FindBy(id = "user-name")
+    private WebElement usernameInput;
+
+    @FindBy(id = "password")
+    private WebElement passwordInput;
+
+    @FindBy(id = "login-button")
+    private WebElement loginButton;
+
+    @FindBy(xpath = "//h3[@data-test='error']")
+    private WebElement errorMessage;
 
     /**
-     * Constructor to initialize the LoginPage with WebDriver.
+     * Constructor to initialize the LoginPage with a WebDriver instance.
+     * Also initializes web elements using PageFactory and loads configuration properties.
      *
-     * @param driver WebDriver instance used to interact with the browser.
+     * @param driver the WebDriver instance to be used
+     * @throws IllegalArgumentException if the WebDriver instance is null
      */
     public LoginPage(WebDriver driver) {
+        if (driver == null) {
+            throw new IllegalArgumentException("WebDriver instance must not be null");
+        }
         this.driver = driver;
+        PageFactory.initElements(driver, this);
+        ConfigManager.loadProperties("final");
     }
 
     /**
-     * Opens the login page URL and disables the autofill feature.
+     * Opens the login page using the URL from the configuration properties.
      */
     public void open() {
-        driver.get("https://www.saucedemo.com/");
-        disableAutofill();
+        driver.get(ConfigManager.getProperty("URL"));
     }
 
     /**
-     * Disables the browser's autofill feature for username and password fields.
-     */
-    public void disableAutofill() {
-        ((JavascriptExecutor) driver).executeScript("document.getElementById('user-name').setAttribute('autocomplete', 'off')");
-        ((JavascriptExecutor) driver).executeScript("document.getElementById('password').setAttribute('autocomplete', 'off')");
-    }
-
-    /**
-     * Enters the specified username into the username input field.
+     * Enters the username into the username input field.
      *
-     * @param username the username to enter.
+     * @param username the username to be entered
      */
     public void enterUsername(String username) {
-        driver.findElement(usernameInput).sendKeys(username);
+        usernameInput.sendKeys(username);
     }
 
     /**
-     * Enters the specified password into the password input field.
+     * Enters the password into the password input field.
      *
-     * @param password the password to enter.
+     * @param password the password to be entered
      */
     public void enterPassword(String password) {
-        driver.findElement(passwordInput).sendKeys(password);
+        passwordInput.sendKeys(password);
     }
 
     /**
      * Clears the username input field.
      */
     public void clearUsername() {
-        WebElement usernameField = driver.findElement(usernameInput);
-        usernameField.clear();
-        usernameField.sendKeys(" ");
-        usernameField.sendKeys(Keys.CONTROL + "a");
-        usernameField.sendKeys(Keys.DELETE);
+        clear(usernameInput);
     }
 
     /**
      * Clears the password input field.
      */
     public void clearPassword() {
-        WebElement passwordField = driver.findElement(passwordInput);
-        passwordField.clear();
-        passwordField.sendKeys(" ");
-        passwordField.sendKeys(Keys.CONTROL + "a");
-        passwordField.sendKeys(Keys.DELETE);
+        clear(passwordInput);
     }
 
     /**
-     * Clicks the login button to submit the login form.
+     * Clears the specified input field using a series of actions.
+     *
+     * @param element the WebElement to be cleared
+     */
+    private void clear(WebElement element) {
+        element.clear();
+        element.sendKeys(" ");
+        element.sendKeys(Keys.CONTROL + "a");
+        element.sendKeys(Keys.DELETE);
+    }
+
+    /**
+     * Clicks the login button to attempt a login.
      */
     public void clickLoginButton() {
-        driver.findElement(loginButton).click();
+        loginButton.click();
     }
 
     /**
-     * Retrieves the text of the error message displayed on the page.
+     * Gets the error message displayed on the login page, if any.
      *
-     * @return the error message text as a String.
+     * @return the error message text, or a default message if no error message is found
      */
     public String getErrorMessage() {
-        return driver.findElement(errorMessage).getText();
+        try {
+            return errorMessage.getText();
+        } catch (NoSuchElementException e) {
+            return "No error message found";
+        }
     }
 }
 

@@ -3,24 +3,29 @@ package com.epam.training.bohdan_peliushok.final_task;
 import org.openqa.selenium.WebDriver;
 
 /**
- * Represents the dashboard page after a successful login.
+ * This class represents the dashboard page of the application.
+ * It provides methods to interact with the elements on the dashboard page.
  */
 public class DashboardPage {
     private WebDriver driver;
 
     /**
-     * Constructor to initialize the DashboardPage with WebDriver.
+     * Constructor to initialize the DashboardPage with a WebDriver instance.
      *
-     * @param driver WebDriver instance used to interact with the browser.
+     * @param driver the WebDriver instance to be used
+     * @throws IllegalArgumentException if the WebDriver instance is null
      */
     public DashboardPage(WebDriver driver) {
+        if (driver == null) {
+            throw new IllegalArgumentException("WebDriver cannot be null");
+        }
         this.driver = driver;
     }
 
     /**
-     * Retrieves the title of the current page.
+     * Gets the title of the current page.
      *
-     * @return the title of the page as a String.
+     * @return the page title as a String
      */
     public String getPageTitle() {
         return driver.getTitle();

@@ -1,6 +1,5 @@
-package com.epam.training.bohdan_peliushok.framework.task_1;
+package com.epam.training.bohdan_peliushok.common;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;

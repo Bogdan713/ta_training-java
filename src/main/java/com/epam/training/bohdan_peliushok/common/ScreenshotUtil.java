@@ -1,4 +1,4 @@
-package com.epam.training.bohdan_peliushok.framework.task_1;
+package com.epam.training.bohdan_peliushok.common;
 
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
